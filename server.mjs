@@ -102,10 +102,13 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
 });
 
-const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
+const PORT = process.env.PORT || 10000;
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+
+const server = app.listen(PORT, HOST, () => {
     console.log(`Server is running on port ${PORT}`);
-    console.log(`Swagger documentation available at http://localhost:${PORT}/api-docs`);
+    console.log(`Swagger documentation available at http://${HOST}:${PORT}/api-docs`);
+    console.log('==> Your service is live 🎉');
 });
 
 // Handle server errors
