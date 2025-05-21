@@ -11,6 +11,9 @@ import { timeout } from './middleware/timeout.js';
 
 dotenv.config();
 
+const PORT = process.env.PORT || 10000;
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+
 const app = express();
 
 // Apply security middleware
@@ -70,7 +73,7 @@ const swaggerOptions = {
         servers: [
             {
                 url: process.env.NODE_ENV === 'production' 
-                    ? 'https://node-curd-api.onrender.com'  // Replace with your actual Render URL
+                    ? 'https://node-curd-api.com'  // Your Render URL
                     : `http://localhost:${PORT}`,
                 description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
             },
@@ -103,9 +106,6 @@ process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err);
     process.exit(1);
 });
-
-const PORT = process.env.PORT || 10000;
-const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 
 const server = app.listen(PORT, HOST, () => {
     console.log(`Server is running on port ${PORT}`);
