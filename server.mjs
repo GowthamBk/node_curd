@@ -20,15 +20,24 @@ const app = express();
 // CORS configuration
 const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
-        ? ['https://node-curd-api.onrender.com', 'http://localhost:10000']  // Add your production URLs
-        : '*',  // Allow all origins in development
+        ? ['https://node-curd-g5h3.onrender.com', 'http://localhost:10000']  // Updated with actual Render URL
+        : '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
     maxAge: 86400 // 24 hours
 };
 
-app.use(cors(corsOptions));
+// Add security headers
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
+        ? 'https://node-curd-g5h3.onrender.com' 
+        : '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 
 // Apply security middleware
 applySecurityMiddleware(app);
@@ -87,7 +96,7 @@ const swaggerOptions = {
         servers: [
             {
                 url: process.env.NODE_ENV === 'production' 
-                    ? 'https://node-curd-api.onrender.com'
+                    ? 'https://node-curd-g5h3.onrender.com'  // Updated with actual Render URL
                     : `http://localhost:${PORT}`,
                 description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
             }
