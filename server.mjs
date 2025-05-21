@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import studentRoutes from './routes/studentRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -15,6 +16,19 @@ const PORT = process.env.PORT || 10000;
 const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 
 const app = express();
+
+// CORS configuration
+const corsOptions = {
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://node-curd-api.onrender.com', 'http://localhost:10000']  // Add your production URLs
+        : '*',  // Allow all origins in development
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    maxAge: 86400 // 24 hours
+};
+
+app.use(cors(corsOptions));
 
 // Apply security middleware
 applySecurityMiddleware(app);
@@ -73,10 +87,10 @@ const swaggerOptions = {
         servers: [
             {
                 url: process.env.NODE_ENV === 'production' 
-                    ? 'https://node-curd-api.com'  // Your Render URL
+                    ? 'https://node-curd-api.onrender.com'
                     : `http://localhost:${PORT}`,
                 description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
-            },
+            }
         ],
         components: {
             securitySchemes: {
@@ -92,7 +106,15 @@ const swaggerOptions = {
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {
+    swaggerOptions: {
+        persistAuthorization: true,
+        docExpansion: 'none',
+        filter: true,
+        showCommonExtensions: true,
+        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+    },
+}));
 
 // Routes
 app.use('/api/auth', authRoutes);
